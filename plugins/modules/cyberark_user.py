@@ -194,8 +194,10 @@ def user_details(module):
     result = {}
     end_point = "/PasswordVault/WebServices/PIMServices.svc/Users/{0}".format(username)
 
-    headers = {"Content-Type": "application/json"}
-    headers["Authorization"] = cyberark_session["token"]
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": cyberark_session["token"],
+    }
 
     try:
 
@@ -309,8 +311,9 @@ def user_add_or_update(module, HTTPMethod, existing_info):
 
     # --------------------------------------------------------------
     logging.debug(
-        "HTTPMethod = " + HTTPMethod + " module.params = " + json.dumps(module.params)
+        f"HTTPMethod = {HTTPMethod} module.params = {json.dumps(module.params)}"
     )
+
     logging.debug("Existing Info: %s", json.dumps(existing_info))
     logging.debug("payload => %s", json.dumps(payload))
 
@@ -341,50 +344,49 @@ def user_add_or_update(module, HTTPMethod, existing_info):
     else:
         proceed = True
 
-    if proceed:
-        logging.info("Proceeding to either update or create")
-        try:
-
-            # execute REST action
-            response = open_url(
-                api_base_url + end_point,
-                method=HTTPMethod,
-                headers=headers,
-                data=json.dumps(payload),
-                validate_certs=validate_certs,
-            )
-
-            result = {"result": json.loads(response.read())}
-
-            return (True, result, response.getcode())
-
-        except (HTTPError, httplib.HTTPException) as http_exception:
-
-            module.fail_json(
-                msg=(
-                    "Error while performing user_add_or_update."
-                    "Please validate parameters provided."
-                    "\n*** end_point=%s%s\n ==> %s"
-                    % (api_base_url, end_point, to_text(http_exception))
-                ),
-                payload=payload,
-                headers=headers,
-                status_code=http_exception.code,
-            )
-        except Exception as unknown_exception:
-
-            module.fail_json(
-                msg=(
-                    "Unknown error while performing user_add_or_update."
-                    "\n*** end_point=%s%s\n%s"
-                    % (api_base_url, end_point, to_text(unknown_exception))
-                ),
-                payload=payload,
-                headers=headers,
-                status_code=-1,
-            )
-    else:
+    if not proceed:
         return (False, existing_info, 200)
+    logging.info("Proceeding to either update or create")
+    try:
+
+        # execute REST action
+        response = open_url(
+            api_base_url + end_point,
+            method=HTTPMethod,
+            headers=headers,
+            data=json.dumps(payload),
+            validate_certs=validate_certs,
+        )
+
+        result = {"result": json.loads(response.read())}
+
+        return (True, result, response.getcode())
+
+    except (HTTPError, httplib.HTTPException) as http_exception:
+
+        module.fail_json(
+            msg=(
+                "Error while performing user_add_or_update."
+                "Please validate parameters provided."
+                "\n*** end_point=%s%s\n ==> %s"
+                % (api_base_url, end_point, to_text(http_exception))
+            ),
+            payload=payload,
+            headers=headers,
+            status_code=http_exception.code,
+        )
+    except Exception as unknown_exception:
+
+        module.fail_json(
+            msg=(
+                "Unknown error while performing user_add_or_update."
+                "\n*** end_point=%s%s\n%s"
+                % (api_base_url, end_point, to_text(unknown_exception))
+            ),
+            payload=payload,
+            headers=headers,
+            status_code=-1,
+        )
 
 
 def user_delete(module):
@@ -400,8 +402,10 @@ def user_delete(module):
     result = {}
     end_point = ("PasswordVault/api/Users/{0}").format(username)
 
-    headers = {"Content-Type": "application/json"}
-    headers["Authorization"] = cyberark_session["token"]
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": cyberark_session["token"],
+    }
 
     try:
 
@@ -474,8 +478,11 @@ def user_add_to_group(module):
     result = {}
     end_point = ("/PasswordVault/api/UserGroups/{0}/Members").format(quote(vault_id))
 
-    headers = {"Content-Type": "application/json"}
-    headers["Authorization"] = cyberark_session["token"]
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": cyberark_session["token"],
+    }
+
     # payload = {"UserName": username}
     payload = {"memberId": member_id, "memberType": member_type}
     if domain_name:

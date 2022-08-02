@@ -244,7 +244,7 @@ def retrieve_credential(module):
 
     if "reason" in module.params and module.params["reason"] is not None:
         reason = quote(module.params["reason"])
-        end_point = end_point + "&reason=%s" % reason
+        end_point = end_point + f"&reason={reason}"
 
     result = None
     response = None
@@ -298,7 +298,7 @@ def retrieve_credential(module):
         return (result, response.getcode())
 
     else:
-        module.fail_json(msg="error in end_point=>" + end_point)
+        module.fail_json(msg=f"error in end_point=>{end_point}")
 
 
 def main():

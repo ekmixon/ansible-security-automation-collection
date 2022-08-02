@@ -308,7 +308,7 @@ def processAuthentication(module):
         return (changed, result, response.getcode())
 
     else:
-        module.fail_json(msg="error in end_point=>" + end_point, headers=headers)
+        module.fail_json(msg=f"error in end_point=>{end_point}", headers=headers)
 
 
 def main():
